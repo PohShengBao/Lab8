@@ -80,3 +80,29 @@ def search_ui(inventory):
     for p in results:
         p.display_information()
 
+def main():
+    inventory = Inventory()
+    load_inventory(inventory)
+
+    actions = {"1": inventory.display_all,
+               "2": lambda: add_product_ui(inventory),
+               "3": lambda: update_stock_ui(inventory),
+               "4": lambda: search_ui(inventory),
+               "5": lambda: save_inventory(inventory)}
+
+    while True:
+        show_menu()
+        choice = input("Choose an option (1-6): ").strip()
+        if choice == "6":
+            print("Goodbye!")
+            break
+        action = actions.get(choice)
+        if action:
+            action()
+        else:
+            print("Invalid choice. Please enter 1-6.")
+
+
+if __name__ == "__main__":
+    main()
+
