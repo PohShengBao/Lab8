@@ -21,3 +21,62 @@ def save_inventory(inventory, filename=FILENAME):
     with open(filename, "w") as f:
         json.dump([p.to_dict() for p in inventory.get_products()], f, indent=4)
     print(f"Inventory saved to {filename}.")
+
+def show_menu():
+    print("\n=== Inventory Management System ===")
+    print("1. Display all products")
+    print("2. Add a product")
+    print("3. Update stock")
+    print("4. Search for a product")
+    print("5. Save inventory")
+    print("6. Exit")
+
+
+def ask_int(prompt):
+    try:
+        return int(input(prompt))
+    except ValueError:
+        return None
+
+
+def add_product_ui(inventory):
+    product_id = input("Product ID: ").strip()
+    name = input("Name: ").strip()
+    try:
+        price = float(input("Price: "))
+        stock = int(input("Stock: "))
+        if price < 0:
+            raise ValueError
+        product = Product(product_id, name, price, stock)
+    except ValueError:
+        print("Invalid input. Product not added.")
+        return
+    if inventory.add_product(product):
+        print(f"Added {name}.")
+    else:
+        print(f"A product with ID {product_id} already exists.")
+
+
+def update_stock_ui(inventory):
+    product = inventory.get_product(input("Product ID to update: ").strip())
+    if product is None:
+        print("Product not found.")
+        return
+    quantity = ask_int(f"New stock for {product.name} (currently {product.stock}): ")
+    if quantity is None:
+        print("Please enter a whole number.")
+        return
+    try:
+        product.update_stock(quantity)
+        print("Stock updated.")
+    except ValueError as e:
+        print(e)
+
+
+def search_ui(inventory):
+    results = inventory.search_product(input("Search by ID or name: ").strip())
+    if not results:
+        print("No matching products.")
+    for p in results:
+        p.display_information()
+
